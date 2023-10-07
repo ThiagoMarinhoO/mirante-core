@@ -52,4 +52,18 @@ jQuery(document).ready(function($) {
           }
     });
 
+
+    /* XXXXXXXXXXXXXXXXXX MEGA MENU XXXXXXXXXXXXXXXXX */
+
+    $('.sub-menu .childrenLiDiv li').hover(
+      function() {
+        const selectedMiniatureURL = $(this).attr('categoryimage');
+        $('.sub-menu img').attr('src', selectedMiniatureURL);
+        // Adicione o código que desejar executar quando o mouse passar por cima do elemento aqui.
+      },
+      function() {
+        // Adicione o código que desejar executar quando o mouse sair do elemento aqui.
+        $('.sub-menu img').attr('src', '/wp-content/uploads/2023/08/cadeira_presidente_alta_relax_com_braco_corsa_courissimo_linha_economica.jpg');
+      }
+    );
 })
