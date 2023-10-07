@@ -23,6 +23,13 @@
     }
     add_shortcode('mega_menu', 'mega_menu');
 
+    // Get menu description as global variable
+    // function add_menu_description( $item_output, $item, $depth, $args ) {
+    //     global $item;
+    //     return $item;
+    // }
+    // add_filter( 'walker_nav_menu_start_el', 'add_menu_description', 10, 4);
+
     class Custom_Walker_Nav_Menu extends Walker_Nav_Menu {
         function start_el(&$output, $item, $depth = 0, $args = null, $id = 0) {
             // Verifique se o item tem sub-itens (children)
@@ -48,6 +55,9 @@
             $output .= '<img src="http://mirante.test/wp-content/uploads/2023/08/cadeira_presidente_alta_relax_com_braco_corsa_courissimo_linha_economica.jpg" alt="Imagem da categoria">';
 
             $output .= '<div>';
+
+            // global $item;
+            // var_dump($item);
             $output .= '<li></li>';
         }
         

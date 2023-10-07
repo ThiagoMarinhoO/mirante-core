@@ -18,7 +18,6 @@ require_once plugin_dir_path(__FILE__) . '/inc/mirante-core.php';
 require_once plugin_dir_path(__FILE__) . '/inc/new-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/remove-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/shortcodes/menu.php';
-require_once plugin_dir_path(__FILE__) . '/inc/shortcodes/mega-menu.php';
 
 
 function mirante_scripts() {
