@@ -63,7 +63,7 @@ jQuery(document).ready(function($) {
       },
       function() {
         // Adicione o código que desejar executar quando o mouse sair do elemento aqui.
-        $('.sub-menu img').attr('src', '/wp-content/uploads/2023/08/cadeira_presidente_alta_relax_com_braco_corsa_courissimo_linha_economica.jpg');
+        $('.sub-menu img').attr('src', '/wp-content/uploads/2023/05/181568379843805d7b93c37a8d0-1024x603.jpg');
       }
     );
 })

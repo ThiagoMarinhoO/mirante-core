@@ -95,7 +95,7 @@
             // Adicione sua personalização do submenu aqui
             $output .= '<ul class="sub-menu">'; // Personalize a classe da sub-menu conforme necessário
 
-            $output .= '<img src="http://mirante.test/wp-content/uploads/2023/08/cadeira_presidente_alta_relax_com_braco_corsa_courissimo_linha_economica.jpg" alt="Imagem da categoria">';
+            $output .= '<div class="imageContainer"><img src="/wp-content/uploads/2023/05/181568379843805d7b93c37a8d0-1024x603.jpg" alt="Imagem da categoria"></div>';
 
             $output .= '<div class="childrenLiDiv">';
 
