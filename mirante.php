@@ -1,9 +1,9 @@
 <?php
 
    /*
-   Plugin Name: mirante-core
+   Plugin Name: Mirante core
    Plugin URI: #
-   description: complemento do site mirante
+   description: Complemento do site mirante
    Version: 1.0
    Author: Marcos Macedo
    Author URI: #
@@ -11,13 +11,12 @@
    */
 
 
-
-
-
 require_once plugin_dir_path(__FILE__) . '/inc/mirante-core.php';
 require_once plugin_dir_path(__FILE__) . '/inc/new-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/remove-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/shortcodes/menu.php';
+require_once plugin_dir_path(__FILE__) . '/inc/generate-pdf.php';
+require_once(plugin_dir_path(__FILE__) . 'vendor/autoload.php');
 
 
 function mirante_scripts() {
@@ -39,6 +38,17 @@ function mirante_scripts() {
 }
 
 add_action( 'wp_enqueue_scripts', 'mirante_scripts' );
+
+function my_custom_admin_script() {
+    wp_enqueue_script( 'admin-js', plugin_dir_url( __FILE__ ) . '/assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
+    // wp_enqueue_style( 'admin-estoque-style' , plugin_dir_url( __FILE__ ) . '/assets/css/admin.css' );
+    wp_localize_script( 'admin-js', 'wpurl',
+    array( 
+        'ajax' => admin_url( 'admin-ajax.php' ),
+    ) );
+  }
+  
+  add_action( 'admin_enqueue_scripts', 'my_custom_admin_script' );
 
 add_filter( 'woocommerce_locate_template', 'intercept_wc_template', 10, 3 );
 /**

@@ -1,0 +1,9 @@
+{
+    "name": "marcos-macedo/mirante-core",
+    "type": "wordpress-plugin",
+    "require": {
+        "setasign/fpdf": "^1.8"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
