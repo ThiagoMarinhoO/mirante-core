@@ -4,7 +4,6 @@
 }
 
 
-
 /* Estilizando o elemento select */
 .deliveryAdress {
   margin-bottom: 32px;
@@ -98,13 +97,14 @@
 .menuListStyle .menu-item-has-children {
   position: relative;
 }
-.menuListStyle .menu-item-has-children:hover .sub-menu {
+/* .menuListStyle .menu-item-has-children:hover .sub-menu {
   display: flex;
   flex-direction: row-reverse;
   gap: 40px;
-}
+} */
 .menuListStyle .sub-menu {
   display: none;
+  flex-direction: row-reverse;
   list-style: none;
   border-radius: 2px;
   padding: 10px;
@@ -132,6 +132,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-right: 48px;
 }
 .menuListStyle .sub-menu .childrenLiDiv li:not(:first-child){
   border-top: 1px solid #FFF;
@@ -183,22 +184,15 @@
 }
 
 
+/* XXXXXXXXXXXXXXXXXXF ORÇAMENTO FIELDS XXXXXXXXXXXXXXXXX */
+#billing_cpf_field {
+  display: none !important;
+}
+
+
 /* XXXXXXXXXXXXXXXXXXF WOOCOMMERCE CHECKOUT FIELDS XXXXXXXXXXXXXXXXX */
 
-
-/* #full_name_field {
-  display: none;
+.product-entrega-td {
+  font-size: 12px !important;
+  font-weight: 900;
 }
-#razao_social_field {
-  display: none;
-}
-#fantasia_field {
-  display: none;
-}
-#cnpj_field {
-  display: none;
-}
-#pessoa_responsavel_field {
-  display: none;
-} */
-

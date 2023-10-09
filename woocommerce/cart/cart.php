@@ -61,7 +61,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 		</div>
 	</div>
 
-	<table class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
+	<table class="shop_table shop_table_responsive 2 woocommerce-cart-form__contents" cellspacing="0">
 		<thead>
 			<tr>
 				<th class="product-remove"><span class="screen-reader-text"><?php esc_html_e( 'Remove item', 'woocommerce' ); ?></span></th>
@@ -180,15 +180,37 @@ do_action( 'woocommerce_before_cart' ); ?>
 						?>
 						</td>
 
-						<td class="product-entrega" data-title="<?php esc_attr_e( 'Entrega', 'woocommerce' ); ?>">
+						<td class="product-entrega product-entrega-td" data-title="<?php esc_attr_e( 'Entrega', 'woocommerce' ); ?>">
 							<?php
-								$meta_data = $_product->get_meta_data();
+								$car_product = wc_get_product( $product_id );
 
-								// var_dump($meta_data);
+								// Verifique se o produto é uma variante
+								if ( $car_product->is_type( 'variable' ) ) {
+									// Obtenha todas as variantes do produto
+									$variation_id = $cart_item["variation_id"];
 
-								foreach ($meta_data as $meta) {
-									$value = $meta->value;
-									echo $value;
+									$meta_data = get_post_meta( $variation_id );
+									$valor = $meta_data["_pronta_entrega_encomenda"][0];
+
+									// echo $valor;
+									if ($valor === "pronta_entrega") {
+										echo "Pronta Entrega";
+									} else if ($valor === "encomenda") {
+										echo "Sob Encomenda";
+									} else {
+										echo "Não definido";
+									}
+								} else {
+									$meta_data = get_post_meta( $product_id );
+									$valor = $meta_data["_yith_wcbm_badge_ids"][0];
+
+									if ($valor === "277") {
+										echo "Pronta Entrega";
+									} else if ($valor === "275") {
+										echo "Sob Encomenda";
+									} else {
+										echo "Não definido";
+									}
 								}
 							?>
 						</td>

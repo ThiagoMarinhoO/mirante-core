@@ -1,5 +1,29 @@
+function geraCPF() {
+  var n = 9;
+  var n1 = Math.floor(Math.random() * n);
+  var n2 = Math.floor(Math.random() * n);
+  var n3 = Math.floor(Math.random() * n);
+  var n4 = Math.floor(Math.random() * n);
+  var n5 = Math.floor(Math.random() * n);
+  var n6 = Math.floor(Math.random() * n);
+  var n7 = Math.floor(Math.random() * n);
+  var n8 = Math.floor(Math.random() * n);
+  var n9 = Math.floor(Math.random() * n);
+  var d1 = n9 * 2 + n8 * 3 + n7 * 4 + n6 * 5 + n5 * 6 + n4 * 7 + n3 * 8 + n2 * 9 + n1 * 10;
+  d1 = 11 - (d1 % 11);
+  if (d1 >= 10) d1 = 0;
+  var d2 = d1 * 2 + n9 * 3 + n8 * 4 + n7 * 5 + n6 * 6 + n5 * 7 + n4 * 8 + n3 * 9 + n2 * 10 + n1 * 11;
+  d2 = 11 - (d2 % 11);
+  if (d2 >= 10) d2 = 0;
+
+  return '' + n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + d1 + d2;
+}
+
 jQuery(document).ready(function($) {
+    /* XXXXXXXXXXXXXXXXXX BUTTONS ADITIONALS  XXXXXXXXXXXXXXXXX */    
     $('.single_add_to_cart_button.button').text("Orçar");
+    $('.woocommerce-loop-product__buttons .product_type_simple').text("Orçar");
+    
 
     $('#ufSelect').on("change", function() {
         const selectedValue = $('#ufSelect').val();
@@ -52,8 +76,20 @@ jQuery(document).ready(function($) {
           }
     });
 
+    var cpf = geraCPF();
+    $("#billing_cpf").val(cpf);
 
     /* XXXXXXXXXXXXXXXXXX MEGA MENU XXXXXXXXXXXXXXXXX */
+    $('.sub-menu').hide();
+
+    $('.menu-item-has-children').hover(function () {
+      $(this).find('.sub-menu').fadeIn('slow');
+      $(this).find('.sub-menu').css('display', 'flex');
+    },
+    function() {
+      // Adicione o código que desejar executar quando o mouse sair do elemento aqui.
+      $(this).find('.sub-menu').fadeOut();
+    });
 
     $('.sub-menu .childrenLiDiv li').hover(
       function() {
