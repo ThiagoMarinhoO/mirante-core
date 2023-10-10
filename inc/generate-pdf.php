@@ -59,19 +59,19 @@ function generate_pdf($order) {
 
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
 
-    $pdf->Cell(114, 6, utf8_decode($order->get_billing_city()), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Vendedor"), 0, 0);
+    $pdf->Cell(202, 6, utf8_decode($order->get_billing_city()), 0, 0);
+    $pdf->Cell(50, 6, utf8_decode("Vendedor:"), 0, 0);
     $pdf->Cell(25, 6, utf8_decode(get_field('vendedor' , $order->get_order_number())), 0, 1);
 
-    $pdf->Cell(114, 6, utf8_decode("Espírito Santo"), 0, 0);
+    $pdf->Cell(202, 6, utf8_decode("Espírito Santo"), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Data da Fatura:"), 0, 0); 
-    $pdf->Cell(25, 6, utf8_decode($order->get_date_created()->format('d/m/Y')), 0, 1); 
+    $pdf->Cell(25, 6, utf8_decode(date('d/m/Y')), 0, 1); 
 
-    $pdf->Cell(114, 6,utf8_decode($order->get_billing_phone()), 0, 0);
+    $pdf->Cell(202, 6,utf8_decode($order->get_billing_phone()), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Número do Pedido:"), 0, 0); 
     $pdf->Cell(25, 6, utf8_decode($order->get_order_number()), 0, 1); 
 
-    $pdf->Cell(114, 6, utf8_decode($order->get_billing_email()), 0, 0);
+    $pdf->Cell(202, 6, utf8_decode($order->get_billing_email()), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Data do Pedido:"), 0, 0); 
     $pdf->Cell(25, 6, utf8_decode($order->get_date_created()->format('d/m/Y')), 0, 1); 
 
