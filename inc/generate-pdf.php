@@ -30,7 +30,7 @@ function generate_pdf($order) {
     ob_clean();
     $logo_path = plugin_dir_url(__FILE__) . '../assets/images/mirantelogo.png';
 
-    $pdf = new FPDF('P','mm','A4');
+    $pdf = new FPDF('L','mm','A4');
 
     $pdf->AddPage();
 
@@ -59,7 +59,9 @@ function generate_pdf($order) {
 
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
 
-    $pdf->Cell(0, 6, utf8_decode($order->get_billing_city()), 0, 1);
+    $pdf->Cell(114, 6, utf8_decode($order->get_billing_city()), 0, 0);
+    $pdf->Cell(50, 6, utf8_decode("Vendedor"), 0, 0);
+    $pdf->Cell(25, 6, utf8_decode(get_field('vendedor' , $order->get_order_number())), 0, 1);
 
     $pdf->Cell(114, 6, utf8_decode("Espírito Santo"), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Data da Fatura:"), 0, 0); 
@@ -94,6 +96,7 @@ function generate_pdf($order) {
         
         $table_product = wc_get_product( $item["product_id"] );
 
+        // Verifique se o produto é uma variante
         if ( $table_product->is_type( 'variable' ) ) {
             // Obtenha todas as variantes do produto
             $variation_id = $item["variation_id"];
@@ -170,16 +173,28 @@ function generate_pdf($order) {
     $pdf->Cell(0, 20, utf8_decode("Detalhes do pedido"), 0, 1,);
 
     $pdf->SetFont('Arial', "", 12);
-    //add dummy cell at beginning of each line for indentation
+    $pdf->Cell(90, 5,utf8_decode('Validade da proposta:'),0,0);
+    $pdf->Cell(90, 5,utf8_decode(get_field('validade_da_proposta' , $order->get_order_number())),0,1);
+
     $pdf->Cell(90, 5,utf8_decode('Forma de pagamento:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
+    $pdf->Cell(90, 5,utf8_decode(get_field('metodo_de_pagamento' , $order->get_order_number())),0,1);
 
     $pdf->Cell(90, 5,utf8_decode('Prazo de entrega:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX') ,0,1);
+    $pdf->Cell(90, 5,utf8_decode(get_field('prazo_de_entrega' , $order->get_order_number())) ,0,1);
+
+    $formatted_value = 'R$ ' . number_format(get_field('valor_total' , $order->get_order_number()), 2, ',', '.');
 
     $pdf->Cell(90, 5,utf8_decode('Valor total:'),0,0);
     $pdf->SetFont('Arial', "B", 12);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
+    $pdf->Cell(90, 5,utf8_decode($formatted_value),0,1);
+
+    $pdf->Ln(16);
+
+    $pdf->SetFont('Arial', "B", 16);
+    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1,);
+
+    $pdf->SetFont('Arial', "", 12);
+    $pdf->Cell(90, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())),0,1);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
