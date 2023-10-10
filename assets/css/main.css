@@ -196,3 +196,7 @@
   font-size: 12px !important;
   font-weight: 900;
 }
+
+.home .add_to_cart_button{
+  display: none !important;
+}

@@ -73,12 +73,10 @@
                 if ($item->object === 'product_cat' && is_numeric($object_id)) {
                     // Use o ID do objeto para obter informações da categoria de produto
                     $category = get_term($object_id, 'product_cat');
-                    $thumbnail_id = get_term_meta( $category->term_id, 'thumbnail_id', true );
+                    $image_url = get_field('imagem' , 'category_'.$category->term_id);
 
-                    if ($thumbnail_id) {
-                        $thumbnail_url = wp_get_attachment_thumb_url( $thumbnail_id );
-                        // var_dump($thumbnail_url);
-                        $output .= '<li categoryImage="' . esc_url($thumbnail_url) . '">';
+                    if ($image_url) {
+                        $output .= '<li categoryImage="' . get_field('imagem' , 'category_'.$category->term_id) . '">';
                         $output .= '<a href="' . esc_url($item->url) . '">' . esc_html($item->title) . '</a>';
                     } else {
                         $output .= '<li>';

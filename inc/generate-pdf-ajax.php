@@ -25,7 +25,7 @@ function order_pdf_generate($order) {
     ob_clean();
     $logo_path = plugin_dir_url(__FILE__) . '../assets/images/mirantelogo.png';
 
-    $pdf = new FPDF('P','mm','A4');
+    $pdf = new FPDF('L','mm','A4');
 
     $pdf->AddPage();
 
@@ -54,7 +54,9 @@ function order_pdf_generate($order) {
 
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
 
-    $pdf->Cell(0, 6, utf8_decode($order->get_billing_city()), 0, 1);
+    $pdf->Cell(114, 6, utf8_decode($order->get_billing_city()), 0, 0);
+    $pdf->Cell(50, 6, utf8_decode("Vendedor"), 0, 0);
+    $pdf->Cell(25, 6, utf8_decode(get_field('vendedor' , $order->get_order_number())), 0, 1);
 
     $pdf->Cell(114, 6, utf8_decode("Espírito Santo"), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Data da Fatura:"), 0, 0); 
@@ -166,16 +168,28 @@ function order_pdf_generate($order) {
     $pdf->Cell(0, 20, utf8_decode("Detalhes do pedido"), 0, 1,);
 
     $pdf->SetFont('Arial', "", 12);
-    //add dummy cell at beginning of each line for indentation
+    $pdf->Cell(90, 5,utf8_decode('Validade da proposta:'),0,0);
+    $pdf->Cell(90, 5,utf8_decode(get_field('validade_da_proposta' , $order->get_order_number())),0,1);
+
     $pdf->Cell(90, 5,utf8_decode('Forma de pagamento:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
+    $pdf->Cell(90, 5,utf8_decode(get_field('metodo_de_pagamento' , $order->get_order_number())),0,1);
 
     $pdf->Cell(90, 5,utf8_decode('Prazo de entrega:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX') ,0,1);
+    $pdf->Cell(90, 5,utf8_decode(get_field('prazo_de_entrega' , $order->get_order_number())) ,0,1);
+
+    $formatted_value = 'R$ ' . number_format(get_field('valor_total' , $order->get_order_number()), 2, ',', '.');
 
     $pdf->Cell(90, 5,utf8_decode('Valor total:'),0,0);
     $pdf->SetFont('Arial', "B", 12);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
+    $pdf->Cell(90, 5,utf8_decode($formatted_value),0,1);
+
+    $pdf->Ln(16);
+
+    $pdf->SetFont('Arial', "B", 16);
+    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1,);
+
+    $pdf->SetFont('Arial', "", 12);
+    $pdf->Cell(90, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())),0,1);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
@@ -185,5 +199,46 @@ function order_pdf_generate($order) {
 
     die();
 }
+
+function add_custom_update_button() {
+    global $post;
+
+    // Verifique se é uma postagem de pedido WooCommerce.
+    if (is_object($post) && $post->post_type == 'shop_order') {
+        echo '<button type="submit" class="button" name="custom_update_order">Atualizar Pedido</button>';
+    }
+}
+
+/**
+ * Salve os campos personalizados e atualize o pedido quando o botão for clicado.
+ */
+// function custom_update_order() {
+//     global $post;
+
+//     // Verifique se o botão personalizado foi clicado.
+//     if (isset($_POST['custom_update_order'])) {
+//         // Salve os valores dos campos personalizados aqui.
+//         $prazo_entrega = sanitize_text_field($_POST['prazo_de_entrega']);
+//         $valor_total = sanitize_text_field($_POST['valor_total']);
+//         $observacoes = sanitize_text_field($_POST['observacoes']);
+//         $validade_da_proposta = sanitize_text_field($_POST['validade_da_proposta']);
+//         $metodo_de_pagamento = sanitize_text_field($_POST['metodo_de_pagamento']);
+
+//         // Atualize os valores dos campos personalizados no pedido.
+//         update_post_meta($post->ID, 'prazo_de_entrega', $prazo_entrega);
+//         update_post_meta($post->ID, 'valor_total', $valor_total);
+//         update_post_meta($post->ID, 'observacoes', $observacoes);
+//         update_post_meta($post->ID, 'validade_da_proposta', $validade_da_proposta);
+//         update_post_meta($post->ID, 'metodo_de_pagamento', $metodo_de_pagamento);
+
+//         // Redirecione de volta à página de edição do pedido após salvar.
+//         wp_redirect(admin_url('post.php?action=edit&post=' . $post->ID));
+//         exit;
+//     }
+// }
+
+// // Adicione o botão e a função de atualização aos ganchos apropriados do WordPress.
+// add_action('post_submitbox_misc_actions', 'add_custom_update_button');
+// add_action('save_post_shop_order', 'custom_update_order');
 
 ?>
