@@ -16,6 +16,7 @@ require_once plugin_dir_path(__FILE__) . '/inc/new-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/remove-checkout-fields.php';
 require_once plugin_dir_path(__FILE__) . '/inc/shortcodes/menu.php';
 require_once plugin_dir_path(__FILE__) . '/inc/generate-pdf.php';
+require_once plugin_dir_path(__FILE__) . '/inc/generate-pdf-ajax.php';
 require_once(plugin_dir_path(__FILE__) . 'vendor/autoload.php');
 
 

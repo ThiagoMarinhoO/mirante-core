@@ -1,31 +1,26 @@
 <?php
-function add_custom_bulk_action_to_order($actions) {
-    global $post;
-    if ($post->post_type === 'shop_order') {
-        $actions['generate_pdf'] = 'Gerar PDF';
-    }
-    return $actions;
+add_action('wp_ajax_generate_pdf_ajax', 'generate_pdf_ajax');
+add_action('wp_ajax_nopriv_generate_pdf_ajax', 'generate_pdf_ajax');
+
+function generate_pdf_ajax(){
+    $order_id = $_POST['order_id'];
+
+    $order = wc_get_order($order_id);
+
+    $pdf_date = $order->get_date_created()->format('d-m-Y');
+
+    $pdf_url = order_pdf_generate($order);
+
+    // Envie uma resposta JSON de sucesso
+    wp_send_json_success(array(
+        'pdf_url' => $pdf_url,
+        'pdf_date' => $pdf_date
+    ));
+    
+    wp_die();
 }
-add_filter('bulk_actions-edit-shop_order', 'add_custom_bulk_action_to_order');
 
-
-function handle_custom_bulk_action_to_order($redirect_to, $action, $post_ids) {
-    if ($action === 'generate_pdf') {
-        
-        foreach ($post_ids as $post_id) {
-            $order = wc_get_order($post_id);
-            if ($order) {
-                generate_pdf($order);
-            }
-        }
-    }
-
-    return $redirect_to;
-}
-add_filter('handle_bulk_actions-edit-shop_order', 'handle_custom_bulk_action_to_order', 10, 3);
-
-use FPDF as GlobalFPDF;
-function generate_pdf($order) {
+function order_pdf_generate($order) {
     require(plugin_dir_path(__FILE__) . '../vendor/setasign/fpdf/fpdf.php');
     ob_clean();
     $logo_path = plugin_dir_url(__FILE__) . '../assets/images/mirantelogo.png';
@@ -150,14 +145,10 @@ function generate_pdf($order) {
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
-    $pdf->Output('D', $filename);
+    $pdf->Output('F', $filename);
+    return $filename;
 
     die();
 }
 
-
-
-
-add_action('wp_ajax_generate_pdf', 'generate_pdf');
-add_action('wp_ajax_nopriv_generate_pdf', 'generate_pdf');
 ?>
