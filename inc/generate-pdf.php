@@ -59,9 +59,7 @@ function generate_pdf($order) {
 
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
 
-    $pdf->Cell(114, 6, utf8_decode($order->get_billing_city()), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Número da Fatura:"), 0, 0);
-    $pdf->Cell(25, 6, utf8_decode("8"), 0, 1); 
+    $pdf->Cell(0, 6, utf8_decode($order->get_billing_city()), 0, 1);
 
     $pdf->Cell(114, 6, utf8_decode("Espírito Santo"), 0, 0);
     $pdf->Cell(50, 6, utf8_decode("Data da Fatura:"), 0, 0); 
@@ -77,6 +75,14 @@ function generate_pdf($order) {
 
     $pdf->Cell(0, 20, "", 0, 1); 
 
+    $pdf->SetFillColor(0,0,0);
+    $pdf->SetTextColor(255,255,255);
+    
+    $pdf->Cell(40,12,utf8_decode("imagem"),1,0, "C", true); 
+    $pdf->Cell(80,12,utf8_decode("Produto"),1, 0, "C", true);
+    $pdf->Cell(30,12, utf8_decode("Quantidade"),1,0, "C", true);
+    $pdf->Cell(40,12, utf8_decode("Preço"),1,1, "C", true); 
+
     foreach($order->get_items() as $item_id => $item){
         $product = $item->get_product();
         $product_name = $product->get_name();
@@ -84,13 +90,33 @@ function generate_pdf($order) {
         $product_price = $product->get_price();
         $product_id = $product->get_id();
 
-        $product_image_url = get_the_post_thumbnail_url($product_id);
         $formatted_price = 'R$ ' . number_format($product_price, 2, ',', '.');
+        
+        $table_product = wc_get_product( $item["product_id"] );
+
+        // Verifique se o produto é uma variante
+        if ( $table_product->is_type( 'variable' ) ) {
+            // Obtenha todas as variantes do produto
+            $variation_id = $item["variation_id"];
+
+            if(get_the_post_thumbnail_url($variation_id)) {
+                $product_image_url = get_the_post_thumbnail_url($variation_id);
+            } else {
+                $product_image_url = "http://mirante.test/wp-content/uploads/woocommerce-placeholder.png";
+            }
+        } else {
+            if(get_the_post_thumbnail_url($product_id)) {
+                $product_image_url = get_the_post_thumbnail_url($product_id);
+            } else {
+                $product_image_url = "http://mirante.test/wp-content/uploads/woocommerce-placeholder.png";
+            }
+        }
+
+        
 
         $cellWidth=80;
         $cellHeight=8;
 
-        error_log($product);
         
         if($pdf->GetStringWidth($product_name) < $cellWidth){
             $line=1;
@@ -118,20 +144,6 @@ function generate_pdf($order) {
             $line=count($textArray);
         }
 
-        $pdf->SetFillColor(0,0,0);
-        $pdf->SetTextColor(255,255,255);
-        
-        $pdf->Cell(40,($line * $cellHeight),utf8_decode("imagem"),1,0, "C", true); 
-        
-        $xPos=$pdf->GetX();
-        $yPos=$pdf->GetY();
-        $pdf->MultiCell($cellWidth,($line * $cellHeight),utf8_decode("Produto"),1, "C", true);
-        
-        $pdf->SetXY($xPos + $cellWidth , $yPos);
-
-        $pdf->Cell(30,($line * $cellHeight), utf8_decode("Quantidade"),1,0, "C", true);
-        
-        $pdf->Cell(40,($line * $cellHeight), utf8_decode("Preço"),1,1, "C", true); 
 
         $pdf->SetTextColor(0,0,0);
 
@@ -140,7 +152,9 @@ function generate_pdf($order) {
         
         $xPos=$pdf->GetX();
         $yPos=$pdf->GetY();
+
         $pdf->Image($product_image_url, 25, ($pdf->GetY() + 2), 12, 12);
+        
         $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1, "C");
         
         $pdf->SetXY($xPos + $cellWidth , $yPos);
