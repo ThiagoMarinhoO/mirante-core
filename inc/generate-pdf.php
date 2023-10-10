@@ -94,7 +94,6 @@ function generate_pdf($order) {
         
         $table_product = wc_get_product( $item["product_id"] );
 
-        // Verifique se o produto é uma variante
         if ( $table_product->is_type( 'variable' ) ) {
             // Obtenha todas as variantes do produto
             $variation_id = $item["variation_id"];
@@ -102,13 +101,13 @@ function generate_pdf($order) {
             if(get_the_post_thumbnail_url($variation_id)) {
                 $product_image_url = get_the_post_thumbnail_url($variation_id);
             } else {
-                $product_image_url = "http://mirante.test/wp-content/uploads/woocommerce-placeholder.png";
+                $product_image_url = plugin_dir_url(__FILE__) . '../assets/images/woocommerce-placeholder.png';
             }
         } else {
             if(get_the_post_thumbnail_url($product_id)) {
                 $product_image_url = get_the_post_thumbnail_url($product_id);
             } else {
-                $product_image_url = "http://mirante.test/wp-content/uploads/woocommerce-placeholder.png";
+                $product_image_url = plugin_dir_url(__FILE__) . '../assets/images/woocommerce-placeholder.png';
             }
         }
 
