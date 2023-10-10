@@ -218,10 +218,10 @@ function generate_pdf($order) {
     $pdf->Ln(16);
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1,);
+    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1);
 
     $pdf->SetFont('Arial', "", 12);
-    $pdf->Cell(90, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())),0,1);
+    $pdf->MultiCell(0 , 5,utf8_decode(get_field('observacoes' , $order->get_order_number())),0);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');

@@ -212,10 +212,10 @@ function order_pdf_generate($order) {
     $pdf->Ln(16);
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1,);
+    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1);
 
     $pdf->SetFont('Arial', "", 12);
-    $pdf->Cell(90, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())),0,1);
+    $pdf->MultiCell(0, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())) , 0);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
@@ -225,46 +225,5 @@ function order_pdf_generate($order) {
 
     die();
 }
-
-function add_custom_update_button() {
-    global $post;
-
-    // Verifique se é uma postagem de pedido WooCommerce.
-    if (is_object($post) && $post->post_type == 'shop_order') {
-        echo '<button type="submit" class="button" name="custom_update_order">Atualizar Pedido</button>';
-    }
-}
-
-/**
- * Salve os campos personalizados e atualize o pedido quando o botão for clicado.
- */
-// function custom_update_order() {
-//     global $post;
-
-//     // Verifique se o botão personalizado foi clicado.
-//     if (isset($_POST['custom_update_order'])) {
-//         // Salve os valores dos campos personalizados aqui.
-//         $prazo_entrega = sanitize_text_field($_POST['prazo_de_entrega']);
-//         $valor_total = sanitize_text_field($_POST['valor_total']);
-//         $observacoes = sanitize_text_field($_POST['observacoes']);
-//         $validade_da_proposta = sanitize_text_field($_POST['validade_da_proposta']);
-//         $metodo_de_pagamento = sanitize_text_field($_POST['metodo_de_pagamento']);
-
-//         // Atualize os valores dos campos personalizados no pedido.
-//         update_post_meta($post->ID, 'prazo_de_entrega', $prazo_entrega);
-//         update_post_meta($post->ID, 'valor_total', $valor_total);
-//         update_post_meta($post->ID, 'observacoes', $observacoes);
-//         update_post_meta($post->ID, 'validade_da_proposta', $validade_da_proposta);
-//         update_post_meta($post->ID, 'metodo_de_pagamento', $metodo_de_pagamento);
-
-//         // Redirecione de volta à página de edição do pedido após salvar.
-//         wp_redirect(admin_url('post.php?action=edit&post=' . $post->ID));
-//         exit;
-//     }
-// }
-
-// // Adicione o botão e a função de atualização aos ganchos apropriados do WordPress.
-// add_action('post_submitbox_misc_actions', 'add_custom_update_button');
-// add_action('save_post_shop_order', 'custom_update_order');
 
 ?>
