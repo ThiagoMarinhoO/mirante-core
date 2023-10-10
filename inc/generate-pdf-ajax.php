@@ -74,11 +74,12 @@ function order_pdf_generate($order) {
 
     $pdf->SetFillColor(0,0,0);
     $pdf->SetTextColor(255,255,255);
-    
-    $pdf->Cell(40,12,utf8_decode("imagem"),1,0, "C", true); 
-    $pdf->Cell(80,12,utf8_decode("Produto"),1, 0, "C", true);
-    $pdf->Cell(30,12, utf8_decode("Quantidade"),1,0, "C", true);
-    $pdf->Cell(40,12, utf8_decode("Preço"),1,1, "C", true); 
+
+    $pdf->Cell(30,16,utf8_decode("imagem"),1,0, "C", true); 
+    $pdf->Cell(110,16,utf8_decode("Produto"),1, 0, "C", true);
+    $pdf->Cell(30,16, utf8_decode("Quantidade"),1,0, "C", true);
+    $pdf->Cell(30,16, utf8_decode("Preço"),1,0, "C", true);
+    $pdf->Cell(77,16, utf8_decode("Entrega"),1,1, "C", true);
 
     foreach($order->get_items() as $item_id => $item){
         $product = $item->get_product();
@@ -88,10 +89,10 @@ function order_pdf_generate($order) {
         $product_id = $product->get_id();
 
         $formatted_price = 'R$ ' . number_format($product_price, 2, ',', '.');
+        $delivery_type;
         
         $table_product = wc_get_product( $item["product_id"] );
 
-        // Verifique se o produto é uma variante
         if ( $table_product->is_type( 'variable' ) ) {
             // Obtenha todas as variantes do produto
             $variation_id = $item["variation_id"];
@@ -101,18 +102,41 @@ function order_pdf_generate($order) {
             } else {
                 $product_image_url = plugin_dir_url(__FILE__) . '../assets/images/woocommerce-placeholder.png';
             }
+
+            $meta_data = get_post_meta( $variation_id );
+            $valor = $meta_data["_pronta_entrega_encomenda"][0];
+
+            // echo $valor;
+            if ($valor === "pronta_entrega") {
+                $delivery_type = "Pronta Entrega";
+            } else if ($valor === "encomenda") {
+                $delivery_type = "Sob Encomenda";
+            } else {
+                $delivery_type = "Não definido";
+            }
         } else {
             if(get_the_post_thumbnail_url($product_id)) {
                 $product_image_url = get_the_post_thumbnail_url($product_id);
             } else {
                 $product_image_url = plugin_dir_url(__FILE__) . '../assets/images/woocommerce-placeholder.png';
             }
+
+            $meta_data = get_post_meta( $product_id );
+            $valor = $meta_data["_yith_wcbm_badge_ids"][0];
+
+            if ($valor === "277") {
+                $delivery_type = "Pronta Entrega";
+            } else if ($valor === "275") {
+                $delivery_type = "Sob Encomenda";
+            } else {
+                $delivery_type = "Não definido";
+            }
         }
 
         
 
-        $cellWidth=80;
-        $cellHeight=8;
+        $cellWidth=110;
+        $cellHeight=16;
 
         
         if($pdf->GetStringWidth($product_name) < $cellWidth){
@@ -145,12 +169,12 @@ function order_pdf_generate($order) {
         $pdf->SetTextColor(0,0,0);
 
         
-        $pdf->Cell(40,($line * $cellHeight),"",1,0, "C");
+        $pdf->Cell(30,($line * $cellHeight),"",1,0, "C");
         
         $xPos=$pdf->GetX();
         $yPos=$pdf->GetY();
 
-        $pdf->Image($product_image_url, 25, ($pdf->GetY() + 2), 12, 12);
+        $pdf->Image($product_image_url, 20, ($pdf->GetY() + 2), 12, 12);
         
         $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1, "C");
         
@@ -158,7 +182,9 @@ function order_pdf_generate($order) {
 
         $pdf->Cell(30,($line * $cellHeight), utf8_decode($product_quantity),1,0, "C");
         
-        $pdf->Cell(40,($line * $cellHeight),utf8_decode($formatted_price),1,1, "C"); 
+        $pdf->Cell(30,($line * $cellHeight),utf8_decode($formatted_price),1,0, "C");
+
+        $pdf->Cell(77,($line * $cellHeight),utf8_decode($delivery_type),1,1, "C");
         
     }
 
