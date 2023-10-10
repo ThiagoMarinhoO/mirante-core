@@ -1,31 +1,26 @@
 <?php
-function add_custom_bulk_action_to_order($actions) {
-    global $post;
-    if ($post->post_type === 'shop_order') {
-        $actions['generate_pdf'] = 'Gerar PDF';
-    }
-    return $actions;
+add_action('wp_ajax_generate_pdf_ajax', 'generate_pdf_ajax');
+add_action('wp_ajax_nopriv_generate_pdf_ajax', 'generate_pdf_ajax');
+
+function generate_pdf_ajax(){
+    $order_id = $_POST['order_id'];
+
+    $order = wc_get_order($order_id);
+
+    $pdf_date = $order->get_date_created()->format('d-m-Y');
+
+    $pdf_url = order_pdf_generate($order);
+
+    // Envie uma resposta JSON de sucesso
+    wp_send_json_success(array(
+        'pdf_url' => $pdf_url,
+        'pdf_date' => $pdf_date
+    ));
+    
+    wp_die();
 }
-add_filter('bulk_actions-edit-shop_order', 'add_custom_bulk_action_to_order');
 
-
-function handle_custom_bulk_action_to_order($redirect_to, $action, $post_ids) {
-    if ($action === 'generate_pdf') {
-        
-        foreach ($post_ids as $post_id) {
-            $order = wc_get_order($post_id);
-            if ($order) {
-                generate_pdf($order);
-            }
-        }
-    }
-
-    return $redirect_to;
-}
-add_filter('handle_bulk_actions-edit-shop_order', 'handle_custom_bulk_action_to_order', 10, 3);
-
-use FPDF as GlobalFPDF;
-function generate_pdf($order) {
+function order_pdf_generate($order) {
     require(plugin_dir_path(__FILE__) . '../vendor/setasign/fpdf/fpdf.php');
     ob_clean();
     $logo_path = plugin_dir_url(__FILE__) . '../assets/images/mirantelogo.png';
@@ -52,7 +47,7 @@ function generate_pdf($order) {
     $pdf->Cell(0, 6, "", 0, 1); 
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(189, 20, utf8_decode("ORÇAMENTO"), 0, 1,);
+    $pdf->Cell(189, 20, utf8_decode("FATURA"), 0, 1,);
 
     $pdf->SetFont('Arial', "", 12);
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), 0, 1);
@@ -88,9 +83,7 @@ function generate_pdf($order) {
         $formatted_price = 'R$ ' . number_format($product_price, 2, ',', '.');
 
         $cellWidth=80;
-        $cellHeight=8;
-
-        error_log($product);
+        $cellHeight=5;
         
         if($pdf->GetStringWidth($product_name) < $cellWidth){
             $line=1;
@@ -134,13 +127,11 @@ function generate_pdf($order) {
         $pdf->Cell(40,($line * $cellHeight), utf8_decode("Preço"),1,1, "C", true); 
 
         $pdf->SetTextColor(0,0,0);
-
         
-        $pdf->Cell(40,($line * $cellHeight),"",1,0, "C");
+        $pdf->Cell(40,($line * $cellHeight),$pdf->Image($product_image_url, null, null, 20),1,0, "C"); 
         
         $xPos=$pdf->GetX();
         $yPos=$pdf->GetY();
-        $pdf->Image($product_image_url, 25, ($pdf->GetY() + 2), 12, 12);
         $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1, "C");
         
         $pdf->SetXY($xPos + $cellWidth , $yPos);
@@ -151,34 +142,13 @@ function generate_pdf($order) {
         
     }
 
-    $pdf->Ln(16);
-
-    $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(0, 20, utf8_decode("Detalhes do pedido"), 0, 1,);
-
-    $pdf->SetFont('Arial', "", 12);
-    //add dummy cell at beginning of each line for indentation
-    $pdf->Cell(90, 5,utf8_decode('Forma de pagamento:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
-
-    $pdf->Cell(90, 5,utf8_decode('Prazo de entrega:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX') ,0,1);
-
-    $pdf->Cell(90, 5,utf8_decode('Valor total:'),0,0);
-    $pdf->SetFont('Arial', "B", 12);
-    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
-
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
-    $pdf->Output('D', $filename);
+    $pdf->Output('F', $filename);
+    return $filename;
 
     die();
 }
 
-
-
-
-add_action('wp_ajax_generate_pdf', 'generate_pdf');
-add_action('wp_ajax_nopriv_generate_pdf', 'generate_pdf');
 ?>
