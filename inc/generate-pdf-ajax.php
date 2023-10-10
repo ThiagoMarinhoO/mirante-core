@@ -47,7 +47,7 @@ function order_pdf_generate($order) {
     $pdf->Cell(0, 6, "", 0, 1); 
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(189, 20, utf8_decode("FATURA"), 0, 1,);
+    $pdf->Cell(189, 20, utf8_decode("ORÇAMENTO"), 0, 1,);
 
     $pdf->SetFont('Arial', "", 12);
     $pdf->Cell(189, 6, utf8_decode($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), 0, 1);
@@ -83,7 +83,9 @@ function order_pdf_generate($order) {
         $formatted_price = 'R$ ' . number_format($product_price, 2, ',', '.');
 
         $cellWidth=80;
-        $cellHeight=5;
+        $cellHeight=8;
+
+        error_log($product);
         
         if($pdf->GetStringWidth($product_name) < $cellWidth){
             $line=1;
@@ -127,11 +129,13 @@ function order_pdf_generate($order) {
         $pdf->Cell(40,($line * $cellHeight), utf8_decode("Preço"),1,1, "C", true); 
 
         $pdf->SetTextColor(0,0,0);
+
         
-        $pdf->Cell(40,($line * $cellHeight),$pdf->Image($product_image_url, null, null, 20),1,0, "C"); 
+        $pdf->Cell(40,($line * $cellHeight),"",1,0, "C");
         
         $xPos=$pdf->GetX();
         $yPos=$pdf->GetY();
+        $pdf->Image($product_image_url, 25, ($pdf->GetY() + 2), 12, 12);
         $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1, "C");
         
         $pdf->SetXY($xPos + $cellWidth , $yPos);
@@ -141,6 +145,23 @@ function order_pdf_generate($order) {
         $pdf->Cell(40,($line * $cellHeight),utf8_decode($formatted_price),1,1, "C"); 
         
     }
+
+    $pdf->Ln(16);
+
+    $pdf->SetFont('Arial', "B", 16);
+    $pdf->Cell(0, 20, utf8_decode("Detalhes do pedido"), 0, 1,);
+
+    $pdf->SetFont('Arial', "", 12);
+    //add dummy cell at beginning of each line for indentation
+    $pdf->Cell(90, 5,utf8_decode('Forma de pagamento:'),0,0);
+    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
+
+    $pdf->Cell(90, 5,utf8_decode('Prazo de entrega:'),0,0);
+    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX') ,0,1);
+
+    $pdf->Cell(90, 5,utf8_decode('Valor total:'),0,0);
+    $pdf->SetFont('Arial', "B", 12);
+    $pdf->Cell(90, 5,utf8_decode('XXXXXXXXXXXXX'),0,1);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
