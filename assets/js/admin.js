@@ -1,17 +1,18 @@
 jQuery(document).ready(function($) {
-    $('#generate-pdf-button').click(function() {
-        var order_id = $(this).data('order-id');
-        $.ajax({
-            type: 'POST',
-            url: wpurl.ajax,
-            data: {
-                action: 'generate_pdf',
-                order_id: order_id
-            },
-            success: function(response) {
-                console.log(response)
-                window.open('data:application/pdf;base64,' + response);
-            }
-        });
-    });
+    // $('#generate-pdf-button').click(function() {
+    //     var order_id = $(this).data('order-id');
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: wpurl.ajax,
+    //         data: {
+    //             action: 'generate_pdf',
+    //             order_id: order_id
+    //         },
+    //         success: function(response) {
+    //             console.log(response)
+    //             window.open('data:application/pdf;base64,' + response);
+    //         }
+    //     });
+    // });
+    $('select[name="wc_order_action"]').append('<option value="generate_pdf">Gerar PDF</option')
 });
