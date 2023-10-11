@@ -51,26 +51,18 @@ function my_custom_admin_script() {
   
   add_action( 'admin_enqueue_scripts', 'my_custom_admin_script' );
 
-add_filter( 'woocommerce_locate_template', 'intercept_wc_template', 10, 3 );
-/**
- * Filter the cart template path to use cart.php in this plugin instead of the one in WooCommerce.
- *
- * @param string $template      Default template file path.
- * @param string $template_name Template file slug.
- * @param string $template_path Template file name.
- *
- * @return string The new Template file path.
- */
-function intercept_wc_template( $template, $template_name, $template_path ) {
+  add_filter( 'woocommerce_locate_template', 'intercept_wc_template', 10, 3 );
 
-	if ( 'cart.php' === basename( $template ) ) {
-		$template = trailingslashit( plugin_dir_path( __FILE__ ) ) . 'woocommerce/cart/cart.php';
-	} elseif ( 'review-order.php' === basename( $template ) ) {
-		$template = trailingslashit( plugin_dir_path( __FILE__ ) ) . 'woocommerce/checkout/review-order.php';
-	}
-
-	return $template;
-
-}
+  function intercept_wc_template( $template, $template_name, $template_path ) {
+      if ( 'cart.php' === basename( $template ) ) {
+          $template = trailingslashit( plugin_dir_path( __FILE__ ) ) . 'woocommerce/cart/cart.php';
+      } elseif ( 'cart-totals.php' === basename( $template ) ) {
+          $template = trailingslashit( plugin_dir_path( __FILE__ ) ) . 'woocommerce/cart/cart-totals.php';
+      } elseif ( 'review-order.php' === basename( $template ) ) {
+          $template = trailingslashit( plugin_dir_path( __FILE__ ) ) . 'woocommerce/checkout/review-order.php';
+      }
+  
+      return $template;
+  }
 
 ?>

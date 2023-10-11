@@ -24,6 +24,8 @@ jQuery(document).ready(function($) {
     $('.single_add_to_cart_button.button').text("Orçar");
     $('.woocommerce-loop-product__buttons .product_type_simple').text("Orçar");
     
+    $('#ufSelect').val('')
+    $('.checkout-button').addClass('disabled-button');
 
     $('#ufSelect').on("change", function() {
         const selectedValue = $('#ufSelect').val();
