@@ -102,4 +102,11 @@ jQuery(document).ready(function($) {
         $('.sub-menu img').attr('src', '/wp-content/uploads/2023/05/181568379843805d7b93c37a8d0-1024x603.jpg');
       }
     );
+	$(document).on('click' , 'button[name="woocommerce_checkout_place_order"]' , function(e){
+    e.preventDefault()
+		if($('input#billing_company').val() == ''){
+			$('input#billing_company').val($('#razao_social').val())	
+		}
+    $('form.checkout').submit();
+	})
 })
