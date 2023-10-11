@@ -22,44 +22,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 <form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 	<?php do_action( 'woocommerce_before_cart_table' ); ?>
 
-	<div class="deliveryAdress">
-		<h3 class="deliveryAdressTitle">Local de Entrega</h3>
-		<select id="ufSelect" class="custom-select">
-			<option value="AC">Acre (AC)</option>
-			<option value="AL">Alagoas (AL)</option>
-			<option value="AP">Amapá (AP)</option>
-			<option value="AM">Amazonas (AM)</option>
-			<option value="BA">Bahia (BA)</option>
-			<option value="CE">Ceará (CE)</option>
-			<option value="DF">Distrito Federal (DF)</option>
-			<option value="ES" selected>Espírito Santo (ES)</option>
-			<option value="GO">Goiás (GO)</option>
-			<option value="MA">Maranhão (MA)</option>
-			<option value="MT">Mato Grosso (MT)</option>
-			<option value="MS">Mato Grosso do Sul (MS)</option>
-			<option value="MG">Minas Gerais (MG)</option>
-			<option value="PA">Pará (PA)</option>
-			<option value="PB">Paraíba (PB)</option>
-			<option value="PR">Paraná (PR)</option>
-			<option value="PE">Pernambuco (PE)</option>
-			<option value="PI">Piauí (PI)</option>
-			<option value="RJ">Rio de Janeiro (RJ)</option>
-			<option value="RN">Rio Grande do Norte (RN)</option>
-			<option value="RS">Rio Grande do Sul (RS)</option>
-			<option value="RO">Rondônia (RO)</option>
-			<option value="RR">Roraima (RR)</option>
-			<option value="SC">Santa Catarina (SC)</option>
-			<option value="SP">São Paulo (SP)</option>
-			<option value="SE">Sergipe (SE)</option>
-			<option value="TO">Tocantins (TO)</option>
-		</select>
-		<div id="myModal" class="modalDelivery">
-			<div class="modalDelivery-content">
-				<p>Infelizmente não entregamos na região informada</p>
-				<button id="closeModal">Fechar</button>
-			</div>
-		</div>
-	</div>
+	<h2 style="font-size: 16px;"><?php esc_html_e( 'Cart totals', 'woocommerce' ); ?></h2>
 
 	<table class="shop_table shop_table_responsive 2 woocommerce-cart-form__contents" cellspacing="0">
 		<thead>
