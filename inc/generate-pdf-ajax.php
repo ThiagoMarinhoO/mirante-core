@@ -39,56 +39,74 @@ function order_pdf_generate($order) {
 
     $pdf->Cell(114, 6, "", 0, 0);
     $pdf->SetFont('Arial', "", 10);
-    $pdf->Cell(0, 6, utf8_decode("Humberto de Campos, 470 A - loja 01"), 0, 1, "R"); 
+    $pdf->Cell(0, 6, utf8_decode("Humberto de Campos, 470 A - loja 01 - Jardim Limoeiro, Serra - ES, 29164-034"), 0, 1, "R");
 
-    $pdf->Cell(114, 6, "", 0, 0);
-    $pdf->Cell(0, 6, utf8_decode("Jardim Limoeiro, Serra - ES, 29164-034"), 0, 1, "R");
-
-    $pdf->Cell(0, 6, "", 0, 1); 
+    $pdf->Ln(4);
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(189, 20, utf8_decode("ORÇAMENTO"), 0, 1,);
+    $pdf->Cell(0, 16, utf8_decode("ORÇAMENTO"), 0, 1,);
 
     $pdf->SetFont('Arial', "", 12);
-    $pdf->Cell(189, 6, utf8_decode($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), 0, 1);
 
-    $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
+    // $pdf->Cell(189, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 1);
 
-    $pdf->Cell(202, 6, utf8_decode($order->get_billing_city()), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Vendedor:"), 0, 0);
-    $pdf->Cell(25, 6, utf8_decode(get_field('vendedor' , $order->get_order_number())), 0, 1);
+    $pdf->Cell(202, 6, utf8_decode($order->get_billing_address_1() . ', ' . $order->get_billing_address_2()), 0, 0);
+    $pdf->Cell($pdf->GetStringWidth("Vendedor:"), 6, utf8_decode("Vendedor:"), 0, 0);
+    $pdf->Cell(0, 6, utf8_decode(get_field('vendedor' , $order->get_order_number())), 0, 1, "R");
 
-    $pdf->Cell(202, 6, utf8_decode("Espírito Santo"), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Data da Fatura:"), 0, 0); 
-    $pdf->Cell(25, 6, utf8_decode(date('d/m/Y')), 0, 1); 
+    $pdf->Cell(202, 6, utf8_decode($order->get_billing_city(). " - Espírito Santo"), 0, 0);
+    $pdf->Cell(45, 6, utf8_decode("Data do Orçamento:"), 0, 0); 
+    $pdf->Cell(30, 6, utf8_decode(date('d/m/Y')), 0, 1);
 
     $pdf->Cell(202, 6,utf8_decode($order->get_billing_phone()), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Número do Pedido:"), 0, 0); 
-    $pdf->Cell(25, 6, utf8_decode($order->get_order_number()), 0, 1); 
+    $pdf->Cell(45, 6, utf8_decode("Número do Pedido:"), 0, 0); 
+    $pdf->Cell(30, 6, utf8_decode($order->get_order_number()), 0, 1); 
 
     $pdf->Cell(202, 6, utf8_decode($order->get_billing_email()), 0, 0);
-    $pdf->Cell(50, 6, utf8_decode("Data do Pedido:"), 0, 0); 
-    $pdf->Cell(25, 6, utf8_decode($order->get_date_created()->format('d/m/Y')), 0, 1); 
+    $pdf->Cell(45, 6, utf8_decode("Data do Pedido:"), 0, 0); 
+    $pdf->Cell(30, 6, utf8_decode($order->get_date_created()->format('d/m/Y')), 0, 1);
 
-    $pdf->Cell(0, 20, "", 0, 1); 
+    $pdf->Ln(6);
 
     $pdf->SetFillColor(0,0,0);
     $pdf->SetTextColor(255,255,255);
+    $pdf->Cell(25,16,utf8_decode("imagem"),1,0, "C", true); 
+    $pdf->Cell(152,16,utf8_decode("Produto"),1, 0, "C", true);
+    $pdf->Cell(10,16, utf8_decode("QTD"),1,0, "C", true);
 
-    $pdf->Cell(30,16,utf8_decode("imagem"),1,0, "C", true); 
-    $pdf->Cell(110,16,utf8_decode("Produto"),1, 0, "C", true);
-    $pdf->Cell(30,16, utf8_decode("Quantidade"),1,0, "C", true);
-    $pdf->Cell(30,16, utf8_decode("Preço"),1,0, "C", true);
-    $pdf->Cell(77,16, utf8_decode("Entrega"),1,1, "C", true);
+    $yPos_HeadTable = $pdf->GetY();
 
+    $pdf->Cell(60,8, utf8_decode("Preço"),1,1, "C", true);
+
+    $yPos_preco = $pdf->GetY();
+
+    $pdf->SetXY(197, ($yPos_preco));
+
+    $pdf->Cell(30,8, utf8_decode("Preço Un."),1,0, "R", true);
+    $pdf->Cell(30,8, utf8_decode("Preço Total"),1,1, "R", true);
+
+    $pdf->SetXY(257, $yPos_HeadTable);
+    $pdf->Cell(35,16, utf8_decode("Entrega"),1,1, "C", true);
+
+    $valor_total = 0;
+    $pdf->SetTextColor(0,0,0);
     foreach($order->get_items() as $item_id => $item){
         $product = $item->get_product();
         $product_name = $product->get_name();
         $product_quantity = $item->get_quantity();
-        $product_price = $product->get_price();
         $product_id = $product->get_id();
+        
+        $product_price = $product->get_price();
+        $formatted_price_unit = 'R$ ' . number_format($product_price, 2, ',', '.');
 
-        $formatted_price = 'R$ ' . number_format($product_price, 2, ',', '.');
+        $product_total= ($product_price * $product_quantity);
+        $formatted_price_total = 'R$ ' . number_format($product_total, 2, ',', '.');
+
+        
+        $valor_total += $product_total;
+        $formatted_valor_total = 'R$ ' . number_format($valor_total, 2, ',', '.');
+
         $delivery_type;
         
         $table_product = wc_get_product( $item["product_id"] );
@@ -133,89 +151,99 @@ function order_pdf_generate($order) {
             }
         }
 
+        $cellWidth=152;//wrapped cell width
+        $cellHeight=20;//normal one-line cell height
         
-
-        $cellWidth=110;
-        $cellHeight=16;
-
-        
+        //check whether the text is overflowing
         if($pdf->GetStringWidth($product_name) < $cellWidth){
+            //if not, then do nothing
             $line=1;
         }else{
-            $textLength=strlen($product_name);	
-            $errMargin=10;		
-            $startChar=0;		
-            $maxChar=0;			
-            $textArray=array();	
-            $tmpString="";		
+            //if it is, then calculate the height needed for wrapped cell
+            //by splitting the text to fit the cell width
+            //then count how many lines are needed for the text to fit the cell
             
-            while($startChar < $textLength){ 
+            $textLength=strlen($product_name);	//total text length
+            $errMargin=10;		//cell width error margin, just in case
+            $startChar=0;		//character start position for each line
+            $maxChar=0;			//maximum character in a line, to be incremented later
+            $textArray=array();	//to hold the strings for each line
+            $tmpString="";		//to hold the string for a line (temporary)
+            
+            while($startChar < $textLength){ //loop until end of text
+                //loop until maximum character reached
                 while( 
                 $pdf->GetStringWidth( $tmpString ) < ($cellWidth-$errMargin) &&
                 ($startChar+$maxChar) < $textLength ) {
                     $maxChar++;
                     $tmpString=substr($product_name,$startChar,$maxChar);
                 }
+                //move startChar to next line
                 $startChar=$startChar+$maxChar;
+                //then add it into the array so we know how many line are needed
                 array_push($textArray,$tmpString);
-                
+                //reset maxChar and tmpString
                 $maxChar=0;
                 $tmpString='';
+                
             }
+            //get number of line
             $line=count($textArray);
         }
-
-
-        $pdf->SetTextColor(0,0,0);
-
         
-        $pdf->Cell(30,($line * $cellHeight),"",1,0, "C");
-        
+        //write the cells
+        $pdf->Cell(25,($line * $cellHeight),utf8_decode(""),1,0, "C"); //adapt height to number of lines
+
+        //use MultiCell instead of Cell
+        //but first, because MultiCell is always treated as line ending, we need to 
+        //manually set the xy position for the next cell to be next to it.
+        //remember the x and y position before writing the multicell
         $xPos=$pdf->GetX();
         $yPos=$pdf->GetY();
 
-        $pdf->Image($product_image_url, 20, ($pdf->GetY() + 2), 12, 12);
+        $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1);
         
-        $pdf->MultiCell($cellWidth,$cellHeight,utf8_decode($product_name),1, "C");
-        
+        //return the position for next cell next to the multicell
+        //and offset the x with multicell width
         $pdf->SetXY($xPos + $cellWidth , $yPos);
 
-        $pdf->Cell(30,($line * $cellHeight), utf8_decode($product_quantity),1,0, "C");
-        
-        $pdf->Cell(30,($line * $cellHeight),utf8_decode($formatted_price),1,0, "C");
+        $pdf->Image($product_image_url, 16, ($yPos + (($line * $cellHeight) / 2 - 6)), 12, 12);
 
-        $pdf->Cell(77,($line * $cellHeight),utf8_decode($delivery_type),1,1, "C");
+        $pdf->Cell(10,($line * $cellHeight),utf8_decode($product_quantity),1,0, "C"); //adapt height to number of lines *QUANTIDADE*
         
+        $pdf->Cell(30,($line * $cellHeight),utf8_decode($formatted_price_unit),1,0, "R"); //adapt height to number of lines *UNITÁRIO*
+
+        $pdf->Cell(30,($line * $cellHeight),utf8_decode($formatted_price_total),1,0,"R"); //adapt height to number of lines *PREÇO TOTAL*
+
+        $pdf->Cell(35,($line * $cellHeight),utf8_decode($delivery_type),1,1, "C"); //adapt height to number of lines
     }
 
-    $pdf->Ln(16);
+    $pdf->Ln(6);
+
+    $pdf->SetFont('Arial', "", 14);
+    $pdf->Cell(($pdf->GetStringWidth("Valor Total:")), 6,utf8_decode('Valor total:'),0,0);
+    $pdf->Cell(0, 6,utf8_decode($formatted_valor_total),0,1);
+
+    $pdf->Ln(4);
 
     $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(0, 20, utf8_decode("Detalhes do pedido"), 0, 1,);
+    $pdf->Cell(107, 12, utf8_decode("Detalhes do Pedidos"),0,0);
+    $pdf->Cell(0, 12, utf8_decode("Observações"),0,1);
 
     $pdf->SetFont('Arial', "", 12);
-    $pdf->Cell(90, 5,utf8_decode('Validade da proposta:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode(get_field('validade_da_proposta' , $order->get_order_number())),0,1);
+    $pdf->Cell(44, 6, utf8_decode("Validade da proposta:"),0,0);
+    $pdf->Cell(63, 6, utf8_decode(get_field('validade_da_proposta' , $order->get_order_number())),0,0);
 
-    $pdf->Cell(90, 5,utf8_decode('Forma de pagamento:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode(get_field('metodo_de_pagamento' , $order->get_order_number())),0,1);
+    $yPos = $pdf->GetY();
 
-    $pdf->Cell(90, 5,utf8_decode('Prazo de entrega:'),0,0);
-    $pdf->Cell(90, 5,utf8_decode(get_field('prazo_de_entrega' , $order->get_order_number())) ,0,1);
+    $pdf->MultiCell(0, 6, utf8_decode(get_field('observacoes' , $order->get_order_number())),0);
 
-    $formatted_value = 'R$ ' . number_format(get_field('valor_total' , $order->get_order_number()), 2, ',', '.');
+    $pdf->SetXY(10, ($yPos + 6));
+    $pdf->Cell(44, 6, utf8_decode("Forma de Pagamento:"),0,0);
+    $pdf->Cell(63, 6, utf8_decode(get_field('metodo_de_pagamento' , $order->get_order_number())),0,1);
 
-    $pdf->Cell(90, 5,utf8_decode('Valor total:'),0,0);
-    $pdf->SetFont('Arial', "B", 12);
-    $pdf->Cell(90, 5,utf8_decode($formatted_value),0,1);
-
-    $pdf->Ln(16);
-
-    $pdf->SetFont('Arial', "B", 16);
-    $pdf->Cell(0, 20, utf8_decode("Observações"), 0, 1);
-
-    $pdf->SetFont('Arial', "", 12);
-    $pdf->MultiCell(0, 5,utf8_decode(get_field('observacoes' , $order->get_order_number())) , 0);
+    $pdf->Cell(44, 6, utf8_decode("Prazo de Entrega:"),0,0);
+    $pdf->Cell(63, 6, utf8_decode(get_field('prazo_de_entrega' , $order->get_order_number())),0,1);
 
     $filename = 'Orcamento-' . $order->get_date_created()->format('d-m-Y') . '.pdf';
     header('Content-Type: application/pdf');
